@@ -3,6 +3,6 @@
 
 void printParallel()
 {
-  printf("Testing a Print\n");
+  printf("Testing a Print");
   
 }

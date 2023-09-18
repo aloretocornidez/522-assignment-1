@@ -1,12 +1,12 @@
-IDIR =./include
+IDIR =include
 CC=gcc
 CFLAGS=-Wall -Wfatal-errors -Wno-unused-variable -I$(IDIR)
 
 ODIR=obj
-LDIR =lib
+# LDIR =lib
 
 DEST = seq-jacobi
-LIBS=-lm
+# LIBS=-lm
 
 
 _DEPS = parallel.h
