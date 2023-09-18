@@ -1,27 +1,27 @@
-IDIR =../include
+IDIR =./include
 CC=gcc
 CFLAGS=-Wall -Wfatal-errors -Wno-unused-variable -I$(IDIR)
 
 ODIR=obj
-LDIR =../lib
+LDIR =lib
 
-COMPILE=seq-jacobi
+DEST = seq-jacobi
 LIBS=-lm
 
 
-_DEPS = 
+_DEPS = parallel.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = seq-jacobi.o
+_OBJ = seq-jacobi.o parallel.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 
 $(ODIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-$(COMPILE): $(OBJ)
+$(DEST): $(OBJ)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
 .PHONY: clean
 clean:
-	rm -f $(ODIR)/*.o *~  $(INCDIR)/*~ 
+	rm -f $(ODIR)/*.o *~ $(DEST) $(INCDIR)/*~ 

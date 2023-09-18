@@ -4,9 +4,11 @@
 
 */
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
+
 
 void InitializeGrids();
 double **AllocateGrid(int, int);
@@ -25,7 +27,7 @@ double **grid1, **grid2;
 int main(int argc, char *argv[]) {
   double maxdiff = 0.0;
   struct timeval start, end;
-  
+
   /* read command line and initialize grids */
   gridSize = atoi(argv[1]);
   numIters = atoi(argv[2]);
