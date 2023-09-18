@@ -85,3 +85,4 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+seq-jacobi
