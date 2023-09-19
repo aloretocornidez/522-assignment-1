@@ -86,3 +86,4 @@ Mkfile.old
 dkms.conf
 
 seq-jacobi
+.vscode/
