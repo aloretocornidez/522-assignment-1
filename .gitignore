@@ -87,3 +87,9 @@ dkms.conf
 
 seq-jacobi
 .vscode/
+
+
+seq-jacobi 
+mt-jacobi
+dist-jacobi
+hybrid-jacobi 
