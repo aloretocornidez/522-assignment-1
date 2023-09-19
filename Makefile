@@ -1,27 +1,36 @@
-IDIR =include
+# Makefile
+# Author: Alan Manuel Loreto Cornídez
+# Purpose: This file contains make commands for each of the 
+# different executables for generating the jacobian of a matrix.
+# Assignment: CSC 522 | Parallel Computing
+#
+#
+#
 CC=gcc
-CFLAGS=-Wall -Wfatal-errors -Wno-unused-variable -I$(IDIR)
-
-ODIR=obj
-# LDIR =lib
-
-DEST = seq-jacobi
-# LIBS=-lm
+CFLAGS= -Wall -O2 -Wfatal-errors
 
 
-_DEPS = parallel.h
-DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
+seq-jacobi: seq-jacobi.c
+	$(CC) -o seq-jacobi seq-jacobi.c
 
-_OBJ = seq-jacobi.o parallel.o
-OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
+mt-jacobi: mt-jacobi.c
+	$(CC) -o mt-jacobi mt-jacobi.c
+
+dist-jacobi: dist-jacobi.c
+	$(CC) -o dist-jacobi dist-jacobi.c
+
+hybrid-jacobi: hybrid-jacobi.c
+	$(CC) -o hybrid-jacobi hybrid-jacobi.c
 
 
-$(ODIR)/%.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
+.PHONY: clean	
+clean: 
+	rm seq-jacobi mt-jacobi dist-jacobi hybrid-jacobi 
 
-$(DEST): $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
 
-.PHONY: clean
-clean:
-	rm -f $(ODIR)/*.o *~ $(DEST) $(INCDIR)/*~ 
+.PHONY: all
+all: seq-jacobi mt-jacobi dist-jacobi hybrid-jacobi
+
+.DEFAULT_GOAL := all
+
+
