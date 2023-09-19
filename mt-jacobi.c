@@ -49,15 +49,20 @@ void jacobi(int myId) {
   int endrow = (myId + 1) * (matrixSize / numThreads) - 1;
 
   // matrix mult over the strip of rows for this thread
-  for (i = startrow; i <= endrow; i++) {
-    for (j = 0; j < matrixSize; j++) {
-      sum = 0.0;
-      for (k = 0; k < matrixSize; k++) {
-        sum = sum + a[i][k] * b[k][j];
-      }
-      c[i][j] = sum;
-    }
-  }
+  // for (i = startrow; i <= endrow; i++) {
+  //   for (j = 0; j < matrixSize; j++) {
+  //     sum = 0.0;
+  //     for (k = 0; k < matrixSize; k++) {
+  //       sum = sum + a[i][k] * b[k][j];
+  //     }
+  //     c[i][j] = sum;
+  //   }
+  // }
+  
+
+
+
+
 }
 
 void *worker(void *arg) {
