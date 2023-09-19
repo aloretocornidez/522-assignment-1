@@ -1,4 +1,4 @@
-#include "include/multi-threaded-jacobian.h"
+#include "include/parallel.h"
 #include <stdio.h>
 #include <pthread.h>
 
