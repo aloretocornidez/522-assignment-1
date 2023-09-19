@@ -40,7 +40,7 @@ void printMatrix(double **mat) {
   }
 }
 
-void mm(int myId) {
+void jacobi(int myId) {
   int i, j, k;
   double sum;
 
@@ -62,7 +62,7 @@ void mm(int myId) {
 
 void *worker(void *arg) {
   int id = *((int *)arg);
-  mm(id);
+  jacobi(id);
   return NULL;
 }
 
