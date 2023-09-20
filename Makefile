@@ -9,18 +9,17 @@
 CC=gcc
 CFLAGS= -Wall -O2 -Wfatal-errors
 
-
 seq-jacobi: seq-jacobi.c
-	$(CC) -o seq-jacobi seq-jacobi.c
+	$(CC) $(CFLAGS) -o seq-jacobi seq-jacobi.c
 
 mt-jacobi: mt-jacobi.c
-	$(CC) -o mt-jacobi mt-jacobi.c
+	$(CC) $(CFLAGS) -o mt-jacobi mt-jacobi.c
 
 dist-jacobi: dist-jacobi.c
-	$(CC) -o dist-jacobi dist-jacobi.c
+	$(CC) $(CFLAGS) -o dist-jacobi dist-jacobi.c
 
 hybrid-jacobi: hybrid-jacobi.c
-	$(CC) -o hybrid-jacobi hybrid-jacobi.c
+	$(CC) $(CFLAGS) -o hybrid-jacobi hybrid-jacobi.c
 
 
 .PHONY: clean	
