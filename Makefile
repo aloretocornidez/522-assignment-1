@@ -9,8 +9,8 @@
 CC=gcc
 CFLAGS= -Wall -O2 -Wfatal-errors
 
-seq-jacobi: seq-jacobi.c
-	$(CC) $(CFLAGS) -o seq-jacobi seq-jacobi.c
+# seq-jacobi: seq-jacobi.c
+	# $(CC) $(CFLAGS) -o seq-jacobi seq-jacobi.c
 
 mt-jacobi: mt-jacobi.c
 	$(CC) $(CFLAGS) -o mt-jacobi mt-jacobi.c

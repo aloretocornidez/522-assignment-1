@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include <sys/types.h>
+// #include <sys/types.h>
 
 #define TOLERANCE 0.001
 
@@ -28,13 +28,19 @@ int gridSize, numIters;
 double maxDiff;
 double **grid1, **grid2;
 
+
 int main(int argc, char *argv[]) {
+ 
+  printf("Here");
+
   int i, j;
   int *params;
   pthread_t *threads;        // Thread Handles
   struct timeval start, end; // Time elapsed.
 
   double maxdiff = 0.0;
+
+
 
   // Read command line and initialize grids
   gridSize = atoi(argv[1]);
@@ -173,20 +179,18 @@ double Elapsed(struct timeval end, struct timeval start) {
           (start.tv_sec + start.tv_usec * 0.000001));
 }
 
-
 double **AllocateGrid(int N, int M) {
   int i;
   double *vals, **temp;
 
   // allocate values
-  vals = (double *) malloc (N * M * sizeof(double));
+  vals = (double *)malloc(N * M * sizeof(double));
 
   // allocate vector of pointers
-  temp = (double **) malloc (N * sizeof(double*));
+  temp = (double **)malloc(N * sizeof(double *));
 
-  for(i=0; i < N; i++)
+  for (i = 0; i < N; i++)
     temp[i] = &(vals[i * M]);
 
   return temp;
 }
-
