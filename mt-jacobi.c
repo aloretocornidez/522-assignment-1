@@ -172,3 +172,21 @@ double Elapsed(struct timeval end, struct timeval start) {
   return ((end.tv_sec + end.tv_usec * 0.000001) -
           (start.tv_sec + start.tv_usec * 0.000001));
 }
+
+
+double **AllocateGrid(int N, int M) {
+  int i;
+  double *vals, **temp;
+
+  // allocate values
+  vals = (double *) malloc (N * M * sizeof(double));
+
+  // allocate vector of pointers
+  temp = (double **) malloc (N * sizeof(double*));
+
+  for(i=0; i < N; i++)
+    temp[i] = &(vals[i * M]);
+
+  return temp;
+}
+
