@@ -8,6 +8,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/time.h>
 #include <sys/types.h>
 
 #define TOLERANCE 0.001
@@ -17,9 +18,11 @@ void InitializeGrids(); // Initizalizes the grids used jacobian calculation.
 double **AllocateGrid(int, int); // Allocates grid memory.
 void jacobi(int threadId);       // Calculates the jacobi.
 void *worker(void *arg);
+double Elapsed(struct timeval end,
+               struct timeval start); // Keeps track of the time elapsed.
 
 /* Varaible Declarations */
-int numThreads, matrixSize;
+int numThreads;
 int gridSize, numIters;
 
 double maxDiff;
@@ -28,22 +31,15 @@ double **grid1, **grid2;
 int main(int argc, char *argv[]) {
   int i, j;
   int *params;
-  pthread_t *threads;
+  pthread_t *threads;        // Thread Handles
+  struct timeval start, end; // Time elapsed.
 
   double maxdiff = 0.0;
-  struct timeval start, end;
-
-  // Error if the entries are wrong.
-  if (argc != 3) {
-    printf("Usage: %s <size> <n>,  where size is dimension of square matrix, "
-           "and n is number of threads\n",
-           argv[0]);
-    exit(1);
-  }
 
   // Read command line and initialize grids
   gridSize = atoi(argv[1]);
   numIters = atoi(argv[2]);
+  numThreads = atoi(argv[3]);
 
   // AllocateGrids that are used for a function.
   grid1 = AllocateGrid(gridSize + 2, gridSize + 2);
@@ -62,6 +58,9 @@ int main(int argc, char *argv[]) {
   threads = (pthread_t *)malloc(numThreads * sizeof(pthread_t));
   params = (int *)malloc(numThreads * sizeof(int));
 
+  // Get starting time.
+  gettimeofday(&start, NULL);
+
   // Create threads and execute the worker function.
   for (i = 0; i < numThreads; i++) {
     params[i] = i;
@@ -72,6 +71,9 @@ int main(int argc, char *argv[]) {
   for (i = 0; i < numThreads; i++) {
     pthread_join(threads[i], NULL);
   }
+
+  // Get ending Time.
+  gettimeofday(&end, NULL);
 
   // Free the memory to finish off.
   free(params);
@@ -111,14 +113,14 @@ void jacobi(int myId) {
   int iters;
 
   // compute bounds for this threads---just algebra
-  int startrow = myId * matrixSize / numThreads;
-  int endrow = (myId + 1) * (matrixSize / numThreads) - 1;
+  int startRow = myId * gridSize / numThreads;
+  int endRow = (myId + 1) * (gridSize / numThreads) - 1;
 
   // Currently, this is how it is done in the sequential version of the program.
 
   while (!done) {
     /* update my points */
-    for (i = 1; i <= gridSize; i++) {
+    for (i = startRow; i <= endRow; i++) {
       for (j = 1; j <= gridSize; j++) {
 
         grid2[i][j] = (grid1[i - 1][j] + grid1[i + 1][j] + grid1[i][j - 1] +
@@ -127,21 +129,17 @@ void jacobi(int myId) {
       }
     }
     maxdiff = 0.0;
-    // update my points again and find the max difference between any two points
-    grid2[i][j] = (grid1[i - 1][j] + grid1[i + 1][j] + grid1[i][j - 1] +
-                   grid1[i][j + 1]) *
-                  0.25;
-    grid1[i][j] = (grid2[i - 1][j] + grid2[i + 1][j] + grid2[i][j - 1] +
-                   grid2[i][j + 1]) *
-                  0.25;
 
-    //
-    for (i = 1; i <= gridSize; i++) {
+    // update my points again and find the max difference between any two points
+    for (i = startRow; i <= endRow; i++) {
       for (j = 1; j <= gridSize; j++) {
+
         grid1[i][j] = (grid2[i - 1][j] + grid2[i + 1][j] + grid2[i][j - 1] +
                        grid2[i][j + 1]) *
                       0.25;
 
+        // Since both grids are calculated at this point,
+        // the difference between both grids can be calculated.
         temp = grid1[i][j] - grid2[i][j];
         if (temp < 0)
           temp = -temp;
@@ -154,9 +152,9 @@ void jacobi(int myId) {
     iters++;
 
     // Breaks out of the loops after the maxdiff is below
-    // the tolerance of the max nnumber of iterations is reached.
-
-    done = 1;
+    if (maxdiff < TOLERANCE || iters >= numIters) {
+      done = 1;
+    }
   }
 
   maxDiff = maxdiff;
@@ -168,4 +166,9 @@ void *worker(void *arg) {
   int id = *((int *)arg);
   jacobi(id);
   return NULL;
+}
+
+double Elapsed(struct timeval end, struct timeval start) {
+  return ((end.tv_sec + end.tv_usec * 0.000001) -
+          (start.tv_sec + start.tv_usec * 0.000001));
 }
