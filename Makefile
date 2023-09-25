@@ -15,11 +15,11 @@ seq-jacobi: seq-jacobi.c
 mt-jacobi: mt-jacobi.c
 	$(CC) $(CFLAGS) -o mt-jacobi mt-jacobi.c
 
-dist-jacobi: dist-jacobi.c
-	$(CC) $(CFLAGS) -o dist-jacobi dist-jacobi.c
+# dist-jacobi: dist-jacobi.c
+	# $(CC) $(CFLAGS) -o dist-jacobi dist-jacobi.c
 
-hybrid-jacobi: hybrid-jacobi.c
-	$(CC) $(CFLAGS) -o hybrid-jacobi hybrid-jacobi.c
+# hybrid-jacobi: hybrid-jacobi.c
+	# $(CC) $(CFLAGS) -o hybrid-jacobi hybrid-jacobi.c
 
 
 .PHONY: clean	
