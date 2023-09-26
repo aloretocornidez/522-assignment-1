@@ -30,8 +30,6 @@ double **grid1, **grid2;
 
 int main(int argc, char *argv[]) {
 
-  printf("Here");
-
   int *params;
   pthread_t *threads;        // Thread Handles
   struct timeval start, end; // Time elapsed.
@@ -45,12 +43,7 @@ int main(int argc, char *argv[]) {
   grid1 = AllocateGrid(gridSize + 2, gridSize + 2);
   grid2 = AllocateGrid(gridSize + 2, gridSize + 2);
 
-  /* read command line and initialize grids */
-  gridSize = atoi(argv[1]);
-  numIters = atoi(argv[2]);
 
-  grid1 = AllocateGrid(gridSize + 2, gridSize + 2);
-  grid2 = AllocateGrid(gridSize + 2, gridSize + 2);
 
   InitializeGrids();
 
@@ -74,6 +67,10 @@ int main(int argc, char *argv[]) {
 
   // Get ending Time.
   gettimeofday(&end, NULL);
+
+  
+  int threadNum = atoi(argv[2]);
+  printf("%d 0 %.3f %.5f\n", threadNum, Elapsed(end, start), maxDiff);
 
   // Free the memory to finish off.
   free(params);
@@ -117,14 +114,14 @@ void jacobi(int myId) {
 
   // Currently, this is how it is done in the sequential version of the program.
 
+
+
   while (!done) {
     /* update my points */
-    for (i = startRow; i <= endRow; i++) {
+    for (i = startRow + 1; i <= endRow; i++) {
       for (j = 1; j <= gridSize; j++) {
 
-        grid2[i][j] = (grid1[i - 1][j] + grid1[i + 1][j] + grid1[i][j - 1] +
-                       grid1[i][j + 1]) *
-                      0.25;
+        grid2[i][j] = (grid1[i - 1][j] + grid1[i + 1][j] + grid1[i][j - 1] + grid1[i][j + 1]) * 0.25;
       }
     }
 
@@ -133,12 +130,10 @@ void jacobi(int myId) {
 
     // Update my points again and find the max difference between any two
     // points.
-    for (i = startRow; i <= endRow; i++) {
+    for (i = startRow + 1; i <= endRow; i++) {
       for (j = 1; j <= gridSize; j++) {
 
-        grid1[i][j] = (grid2[i - 1][j] + grid2[i + 1][j] + grid2[i][j - 1] +
-                       grid2[i][j + 1]) *
-                      0.25;
+        grid1[i][j] = (grid2[i - 1][j] + grid2[i + 1][j] + grid2[i][j - 1] + grid2[i][j + 1]) * 0.25;
 
         // Since both grids are calculated at this point,
         // the difference between both grids can be calculated.
