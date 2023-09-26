@@ -28,19 +28,13 @@ int gridSize, numIters;
 double maxDiff;
 double **grid1, **grid2;
 
-
 int main(int argc, char *argv[]) {
- 
+
   printf("Here");
 
-  int i, j;
   int *params;
   pthread_t *threads;        // Thread Handles
   struct timeval start, end; // Time elapsed.
-
-  double maxdiff = 0.0;
-
-
 
   // Read command line and initialize grids
   gridSize = atoi(argv[1]);
@@ -68,13 +62,13 @@ int main(int argc, char *argv[]) {
   gettimeofday(&start, NULL);
 
   // Create threads and execute the worker function.
-  for (i = 0; i < numThreads; i++) {
+  for (int i = 0; i < numThreads; i++) {
     params[i] = i;
     pthread_create(&threads[i], NULL, worker, (void *)(&params[i]));
   }
 
   // Wait until all threads are finished.
-  for (i = 0; i < numThreads; i++) {
+  for (int i = 0; i < numThreads; i++) {
     pthread_join(threads[i], NULL);
   }
 
@@ -112,11 +106,10 @@ void InitializeGrids() {
 void jacobi(int myId) {
   int i, j, k;
 
-  double sum;
   int done = 0;
   double temp;
   double maxdiff;
-  int iters;
+  int iters = 0;
 
   // compute bounds for this threads---just algebra
   int startRow = myId * gridSize / numThreads;
@@ -134,9 +127,12 @@ void jacobi(int myId) {
                       0.25;
       }
     }
+
+    // Resetting the maximum difference.
     maxdiff = 0.0;
 
-    // update my points again and find the max difference between any two points
+    // Update my points again and find the max difference between any two
+    // points.
     for (i = startRow; i <= endRow; i++) {
       for (j = 1; j <= gridSize; j++) {
 
@@ -161,14 +157,17 @@ void jacobi(int myId) {
     if (maxdiff < TOLERANCE || iters >= numIters) {
       done = 1;
     }
+
+
   }
 
   maxDiff = maxdiff;
   return;
 }
 
-// worker
+// Wrapper funciton to allod threads to be allocated.
 void *worker(void *arg) {
+  // Dereference the value inside the function.
   int id = *((int *)arg);
   jacobi(id);
   return NULL;

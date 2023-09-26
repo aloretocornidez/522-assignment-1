@@ -85,11 +85,12 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-seq-jacobi
+
+# My added ignores.
 .vscode/
-
-
 seq-jacobi 
 mt-jacobi
 dist-jacobi
 hybrid-jacobi 
+
+
