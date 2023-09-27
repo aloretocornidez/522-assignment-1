@@ -7,7 +7,7 @@
 #
 #
 CC=gcc
-CFLAGS= -Wall -Wfatal-errors -g -lm
+CFLAGS= -Wall -Wfatal-errors -g
 
 # seq-jacobi: seq-jacobi.c
 	# $(CC) $(CFLAGS) -o seq-jacobi seq-jacobi.c

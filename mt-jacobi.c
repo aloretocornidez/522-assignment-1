@@ -5,7 +5,6 @@
  * using multiple threads via the use <pthread.h> library.
  * Assignment: CSC 522 Parallel Computing | The University of Arizona
  */
-#include <math.h>
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,12 +22,11 @@ double Elapsed(struct timeval end,
                struct timeval start); // Keeps track of the time elapsed.
 
 void allocateBarrierArray(int numThreads); // Allocates the barrier array.
-void disseminationBarrier(int myId, int numThreads);
 
 /* Variable Declarations */
-int numThreads;        // The number of threads executed.
-int numIters;          // The max number of iterations allowed.
-volatile int *arrival; // The array used for the dissemination barrier.
+int numThreads; // The number of threads executed.
+int numIters;   // The max number of iterations allowed.
+int *arrival;   // The array used for the dissemination barrier.
 
 // Value Arrays for calcualting jacobian.
 double maxDiff;
@@ -59,9 +57,6 @@ int main(int argc, char *argv[]) {
   // Get starting time.
   gettimeofday(&start, NULL);
 
-  // Implement the barriers here.
-  allocateBarrierArray(numThreads);
-
   // Create threads and execute the worker function.
   for (int i = 0; i < numThreads; i++) {
     params[i] = i;
@@ -72,6 +67,11 @@ int main(int argc, char *argv[]) {
   for (int i = 0; i < numThreads; i++) {
     pthread_join(threads[i], NULL);
   }
+
+  // Implement the barriers here.
+  allocateBarrierArray(numThreads);
+
+  //
 
   // Get ending Time.
   gettimeofday(&end, NULL);
@@ -122,36 +122,20 @@ void jacobi(int myId) {
   // Currently, this is how it is done in the sequential version of the program.
 
   while (!done) {
-
     /* update my points */
     for (i = startRow + 1; i <= endRow; i++) {
       for (j = 1; j <= gridSize; j++) {
-        grid2[i][j] = (grid1[i - 1][j] + grid1[i + 1][j] + grid1[i][j - 1] +
-                       grid1[i][j + 1]) *
-                      0.25;
+
+        grid2[i][j] = (grid1[i - 1][j] + grid1[i + 1][j] + grid1[i][j - 1] + grid1[i][j + 1]) * 0.25;
+
       }
     }
 
     // Resetting the maximum difference.
     maxdiff = 0.0;
 
-    /*
-     * Barrier is inserted in between the calculation of the
-     * new value at each grid point.
-     * This is because the new grid value is dependent on old
-     * grid values having been calculated.
-     *
-     * The threads access rows that are not calculated by that
-     * thread, so thread2 (wlog) must wait for thread1 to finish
-     * calculation of the previous gread values.
-     *
-     * The same is true for the barrier implemented after the
-     * grid1 is calcualted again (the barrier after the
-     * second for loop.)
-     */
-    disseminationBarrier(myId, numThreads);
-
-    // Update points again, find the max difference between any two points.
+    // Update my points again and find the max difference between any two
+    // points.
     for (i = startRow + 1; i <= endRow; i++) {
       for (j = 1; j <= gridSize; j++) {
 
@@ -168,13 +152,6 @@ void jacobi(int myId) {
           maxdiff = temp;
       }
     }
-
-    /*
-     * Here is the second barrier, the reasoning for the position of the barrier
-     * is stated above.
-     *
-     */
-    disseminationBarrier(myId, numThreads);
 
     // Increments the number of iterations.
     iters++;
@@ -230,35 +207,4 @@ void allocateBarrierArray(int numThreads) {
   }
 
   arrival = temp;
-}
-
-void disseminationBarrier(int threadId, int threads) {
-
-  int lookAt;
-
-  for (int j = 1; j <= ceil(log(numThreads)); j++) {
-
-    // Spin
-    while (arrival[threadId] != 0)
-      printf("first loop, id: %d\n", threadId);
-
-    arrival[threadId] = j;
-
-    // Look at is the value that thread a modifies to allow thread b to
-    // continue.
-    lookAt = (threadId + (int)pow(2, (j - 1))) % threads;
-
-    // Spin Again.
-    while (arrival[lookAt] != j) {
-      printf("id: %d j: %d arrival[lookat]: %d", threadId, j, arrival[lookAt]);
-
-      for (int i = 0; i < numThreads; i++) {
-        printf("%d\n", arrival[i]);
-      }
-    }
-
-    arrival[lookAt] = 0;
-  }
-
-  return;
 }
