@@ -26,7 +26,6 @@ double **grid1, **grid2;
              when the threads are done, print the results */
 
 int main(int argc, char *argv[]) {
-  double maxdiff = 0.0;
   struct timeval start, end;
 
   /* read command line and initialize grids */

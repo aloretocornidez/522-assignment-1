@@ -6,7 +6,8 @@ GRIDSIZE=1024
 NUMITERS=2048
 
 
-
+make clean
+make && clear
 
 echo ""
 echo "#Threads: ${NUMTHREADS} Grid Size: ${GRIDSIZE} Number of Iterations: ${NUMITERS}"

@@ -21,12 +21,17 @@ void *worker(void *arg);
 double Elapsed(struct timeval end,
                struct timeval start); // Keeps track of the time elapsed.
 
-/* Varaible Declarations */
-int numThreads;
-int gridSize, numIters;
+void allocateBarrierArray(int numThreads); // Allocates the barrier array.
 
+/* Variable Declarations */
+int numThreads; // The number of threads executed.
+int numIters;   // The max number of iterations allowed.
+int *arrival;   // The array used for the dissemination barrier.
+
+// Value Arrays for calcualting jacobian.
 double maxDiff;
 double **grid1, **grid2;
+int gridSize;
 
 int main(int argc, char *argv[]) {
 
@@ -42,8 +47,6 @@ int main(int argc, char *argv[]) {
   // AllocateGrids that are used for a function.
   grid1 = AllocateGrid(gridSize + 2, gridSize + 2);
   grid2 = AllocateGrid(gridSize + 2, gridSize + 2);
-
-
 
   InitializeGrids();
 
@@ -65,10 +68,14 @@ int main(int argc, char *argv[]) {
     pthread_join(threads[i], NULL);
   }
 
+  // Implement the barriers here.
+  allocateBarrierArray(numThreads);
+
+  //
+
   // Get ending Time.
   gettimeofday(&end, NULL);
 
-  
   int threadNum = atoi(argv[2]);
   printf("%d 0 %.3f %.5f\n", threadNum, Elapsed(end, start), maxDiff);
 
@@ -101,7 +108,7 @@ void InitializeGrids() {
 
 // jacobi
 void jacobi(int myId) {
-  int i, j, k;
+  int i, j;
 
   int done = 0;
   double temp;
@@ -114,14 +121,13 @@ void jacobi(int myId) {
 
   // Currently, this is how it is done in the sequential version of the program.
 
-
-
   while (!done) {
     /* update my points */
     for (i = startRow + 1; i <= endRow; i++) {
       for (j = 1; j <= gridSize; j++) {
 
         grid2[i][j] = (grid1[i - 1][j] + grid1[i + 1][j] + grid1[i][j - 1] + grid1[i][j + 1]) * 0.25;
+
       }
     }
 
@@ -133,7 +139,9 @@ void jacobi(int myId) {
     for (i = startRow + 1; i <= endRow; i++) {
       for (j = 1; j <= gridSize; j++) {
 
-        grid1[i][j] = (grid2[i - 1][j] + grid2[i + 1][j] + grid2[i][j - 1] + grid2[i][j + 1]) * 0.25;
+        grid1[i][j] = (grid2[i - 1][j] + grid2[i + 1][j] + grid2[i][j - 1] +
+                       grid2[i][j + 1]) *
+                      0.25;
 
         // Since both grids are calculated at this point,
         // the difference between both grids can be calculated.
@@ -152,8 +160,6 @@ void jacobi(int myId) {
     if (maxdiff < TOLERANCE || iters >= numIters) {
       done = 1;
     }
-
-
   }
 
   maxDiff = maxdiff;
@@ -187,4 +193,18 @@ double **AllocateGrid(int N, int M) {
     temp[i] = &(vals[i * M]);
 
   return temp;
+}
+
+void allocateBarrierArray(int numThreads) {
+  int *temp;
+
+  // Allocate an array
+  temp = (int *)malloc(sizeof(int) * numThreads);
+
+  // Initialzing the array to zeros.
+  for (int i = 0; i < numThreads; i++) {
+    temp[i] = 0;
+  }
+
+  arrival = temp;
 }
