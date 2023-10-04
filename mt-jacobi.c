@@ -122,6 +122,7 @@ void jacobi(int myId) {
   // Currently, this is how it is done in the sequential version of the program.
 
   while (!done) {
+    disseminationBarrier(myId, numThreads);
 
     /* update my points */
     for (i = startRow + 1; i <= endRow; i++) {
@@ -174,7 +175,7 @@ void jacobi(int myId) {
      * is stated above.
      *
      */
-    disseminationBarrier(myId, numThreads);
+    // disseminationBarrier(myId, numThreads);
 
     // Increments the number of iterations.
     iters++;
@@ -236,25 +237,22 @@ void disseminationBarrier(int threadId, int threads) {
 
   int lookAt;
 
-  for (int j = 1; j <= ceil(log(numThreads)); j++) {
+  for (int j = 1; j <= ceil(log2(numThreads)); j++) {
 
     // Spin
-    while (arrival[threadId] != 0)
-      printf("first loop, id: %d\n", threadId);
+    while (arrival[threadId] != 0) {
+      ;
+    }
 
     arrival[threadId] = j;
 
     // Look at is the value that thread a modifies to allow thread b to
     // continue.
-    lookAt = (threadId + (int)pow(2, (j - 1))) % threads;
+    lookAt = (int)(threadId + pow(2, (j - 1))) % threads;
 
     // Spin Again.
     while (arrival[lookAt] != j) {
-      printf("id: %d j: %d arrival[lookat]: %d", threadId, j, arrival[lookAt]);
-
-      for (int i = 0; i < numThreads; i++) {
-        printf("%d\n", arrival[i]);
-      }
+      printf("numThreads: %d Thread Id: %d, lookAt: %d  arrival[lookAt]: %d, j: %d\n", numThreads, threadId, lookAt, arrival[lookAt], j);
     }
 
     arrival[lookAt] = 0;
@@ -262,4 +260,3 @@ void disseminationBarrier(int threadId, int threads) {
 
   return;
 }
-
