@@ -1,9 +1,10 @@
 /*
  * Author: Alan Manuel Loreto Cornídez
  * File: mt-jacobian.c
- * Purpose: this file executes the calcualtion of the Jacobian of a matrix
+ * Purpose: this file executes the calculation of the Jacobian of a matrix
  * using multiple threads via the use <pthread.h> library.
  * Assignment: CSC 522 Parallel Computing | The University of Arizona
+ *
  */
 #include <math.h>
 #include <pthread.h>
